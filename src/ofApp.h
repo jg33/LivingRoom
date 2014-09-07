@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxiOS.h"
 #include "ofxiOSExtras.h"
+#include "Particle.h"
 
 class ofApp : public ofxiOSApp{
 	
@@ -22,6 +23,18 @@ class ofApp : public ofxiOSApp{
         void gotFocus();
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
+    
+private:
+    int drawMode;
+    void drawBars();
+    ofColor primaryColor, secondaryColor;
+    
+    vector<Particle> particles;
+    
+    enum drawModes{
+        DRAW_BARS, DRAW_PULSE
+    };
+    
 
 };
 

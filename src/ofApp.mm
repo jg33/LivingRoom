@@ -1,18 +1,36 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){	
+void ofApp::setup(){
+    ofSetOrientation(OF_ORIENTATION_90_LEFT);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    for( int i = 0 ; i<particles.size();i++){
+        
+        
+    }
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	
+	switch (drawMode){
+        case DRAW_BARS:
+            drawBars();
+            break;
+            default:
+            break;
+            
+    }
+}
+
+void ofApp::drawBars(){
+    
+    
 }
 
 //--------------------------------------------------------------
