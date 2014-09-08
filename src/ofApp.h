@@ -4,6 +4,16 @@
 #include "ofxiOS.h"
 #include "ofxiOSExtras.h"
 #include "Particle.h"
+#include "VertBar.h"
+
+#define DEFAULT_PARTICLES 100
+#define TOUCH_HOLD_TIME 60
+
+#define CAM_WIDTH 1280
+#define CAM_HEIGHT 720
+
+#define DEBUG true
+#define IS_SIMULATING true
 
 class ofApp : public ofxiOSApp{
 	
@@ -24,15 +34,30 @@ class ofApp : public ofxiOSApp{
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
     
+    
 private:
     int drawMode;
     void drawBars();
-    ofColor primaryColor, secondaryColor;
+    void drawPanels();
+    ofColor primaryColor, secondaryColor, tertiaryColor;
     
-    vector<Particle> particles;
+    vector<VertBar> particles;
+    
+    
+    bool bTouchHeld;
+    bool bIsGrabbing;
+    int touchHoldCount;
+    
+    void grabColor();
+    //ofVideoGrabber cam;
+    ofTexture camTex;
+    ofPixels camPix;
+    
+    
+    ofFbo canvasFbo;
     
     enum drawModes{
-        DRAW_BARS, DRAW_PULSE
+        DRAW_BARS, DRAW_PULSE, DRAW_CLOCK
     };
     
 
