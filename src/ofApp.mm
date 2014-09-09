@@ -14,30 +14,37 @@ void ofApp::setup(){
     tertiaryColor = secondaryColor;
     tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
 
-    
-    //cam.initGrabber(CAM_WIDTH, CAM_HEIGHT);
+    #if ON_DEVICE
+        cam.initGrabber(CAM_WIDTH, CAM_HEIGHT);
+    #endif
     camPix.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGB);
     camTex.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGB);
     //canvasFbo.allocate(ofGetWidth(), ofGetHeight());
     
     
-    for( int i = 0 ; i<DEFAULT_PARTICLES;i++){
-        particles.push_back(VertBar());
-        particles[i].setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
-        particles[i].setColor(primaryColor);
-        
-    }
+    ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
+    
+    drawMode = PANELS;
+    setupMode(drawMode);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    //if(cam.isFrameNew()){
-        //cam.update();
-    //}
+    #if ON_DEVICE
+        if(cam.isFrameNew()){
+            cam.update();
+        }
+    #endif
     
-    for( int i = 0 ; i<particles.size();i++){
-        particles[i].update();
+    if(drawMode != prevMode){
+        setupMode(drawMode);
+        prevMode = drawMode;
+    }
+    
+    
+    for( int i = 0 ; i<particles.size();i++){ //always update everything
+        particles[i]->update();
         
     }
     
@@ -50,6 +57,11 @@ void ofApp::update(){
         
     }
     
+    if(bIsGrabbing){
+        grabColor();
+    }
+    
+    beat.update(ofGetElapsedTimeMillis());
 
 
 }
@@ -59,10 +71,13 @@ void ofApp::draw(){
     //canvasFbo.begin();
 
 	switch (drawMode){
-        case DRAW_BARS:
+        case BARS:
             drawBars();
             break;
-    
+        case PANELS:
+            drawPanels();
+            break;
+            
             default:
             break;
             
@@ -70,29 +85,75 @@ void ofApp::draw(){
     //canvasFbo.end();
     //canvasFbo.draw(0,0,ofGetWidth() ,ofGetHeight());
     
+    if (bIsGrabbing){ //display Camera
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        camTex.draw(0,0,ofGetWidth(),ofGetHeight());
+        ofNoFill();
+        ofSetColor(grabbingColor);
+        ofSetLineWidth(10);
+        ofSetCircleResolution(500);
+        ofCircle(ofGetWidth()/2, ofGetHeight()/2, 50);
+    }
     
     if(DEBUG){
         ofSetColor(255);
-        ofDrawBitmapString(ofGetFrameRate(), 10,10);
+        ofDrawBitmapString("mode:" + ofToString(drawMode)+" fps:" + ofToString(ofGetFrameRate()), 10,10);
+    }
+}
+
+void ofApp::setupMode(drawModes newMode){
+    if(newMode==BARS){
+        particles.clear();
+        for( int i = 0 ; i<DEFAULT_PARTICLES;i++){
+            VertBar *newBar = new VertBar();
+            particles.push_back( newBar );
+            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
+            particles[i]->setColor(primaryColor);
+            
+        }
+    } else if(newMode==PANELS){
+        particles.clear();
+        for( int i = 0 ; i<DEFAULT_PARTICLES;i++){
+            SlidingPanel * newPanel = new SlidingPanel();
+            particles.push_back( newPanel );
+            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
+            particles[i]->setColor(primaryColor);
+            
+        }
+        
     }
 }
 
 void ofApp::drawBars(){
+    ofFill();
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(secondaryColor);
     ofRect(0,0,ofGetWidth(),ofGetHeight());
     
     for( int i = 0 ; i<particles.size();i++){
-        particles[i].draw();
+        particles[i]->draw();
         
     }
     
 }
 
+void ofApp::drawPanels(){
+    ofFill();
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(tertiaryColor);
+    ofRect(0,0,ofGetWidth(),ofGetHeight());//background
+    
+    for( int i = 0 ; i<particles.size();i++){
+        particles[i]->draw();
+        
+    }
+}
+
 void ofApp::grabColor(){
     int numPix = camPix.getHeight()*camPix.getWidth();
+    int step =10;
     int totalR,totalG, totalB;
-    for (int i =0; i< numPix;i++){ //get avg color
+    for (int i =0; i< numPix ; i+=step){ //get avg color
         int x = i%camPix.getWidth();
         int y = floor(i/camPix.getWidth());
         ofColor pixelColor = camPix.getColor(x, y);
@@ -102,12 +163,16 @@ void ofApp::grabColor(){
         
         
     }
-    totalR/= numPix;
-    totalG/= numPix;
-    totalB/= numPix;
+    totalR/= numPix/step;
+    totalG/= numPix/step;
+    totalB/= numPix/step;
     
-    primaryColor = ofColor(totalR,totalG,totalB);
+    grabbingColor = ofColor(totalR,totalG,totalB);
 
+    
+}
+
+void ofApp::audioReceived(float * f, int buff  , int chan){
     
 }
 
@@ -141,17 +206,26 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
             
             
         } else{
-            grabColor();
+            
+            primaryColor = grabbingColor;
         }
         
         for( int i = 0 ; i<particles.size();i++){
-            particles[i].setColor(primaryColor);
+            particles[i]->setColor(primaryColor);
             
         }
         
+        bIsGrabbing = false;
+        
     } else { //tap to change modes
-        //drawMode++;
-        //drawMode = drawMode%sizeof(drawModes);
+        if(drawMode == CLOCK){
+            drawMode = BARS;
+        } else  {
+            int i = (int) drawMode; //cycle through modes
+            i++;
+            drawMode = (drawModes) i;
+            cout<<drawMode<<endl;
+        }
         
         
     }
@@ -187,6 +261,15 @@ void ofApp::gotMemoryWarning(){
 
 //--------------------------------------------------------------
 void ofApp::deviceOrientationChanged(int newOrientation){
-
+    switch(newOrientation){
+        case OF_ORIENTATION_90_LEFT:
+            ofSetOrientation(OF_ORIENTATION_90_LEFT);
+            break;
+        case OF_ORIENTATION_90_RIGHT:
+            ofSetOrientation(OF_ORIENTATION_90_RIGHT);
+            break;
+        default:
+            break;
+    }
 }
 

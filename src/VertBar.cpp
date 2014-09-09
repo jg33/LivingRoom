@@ -11,14 +11,13 @@
 
 VertBar::VertBar(){
     changeSpeed = ofRandom(0.00001,0.02);
-    
+    cout<<"made vert"<<endl;
 }
 
 void VertBar::update(){
     commonUpdate();
     color = ofColor(color,ofNoise(randomSeed+(ofGetFrameNum()*changeSpeed))*255);
     size = ofNoise(500+randomSeed+(ofGetFrameNum()*changeSpeed))*ofGetHeight();
-    
 }
 
 

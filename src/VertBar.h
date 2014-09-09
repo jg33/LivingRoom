@@ -17,11 +17,11 @@ class VertBar: public Particle{
 
     public:
         VertBar();
-    void update();
+        void update();
         void draw();
     
-private:
-    float changeSpeed;
+    private:
+        float changeSpeed;
     
 };
 

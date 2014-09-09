@@ -18,7 +18,10 @@ public:
     Particle();
     void reset();
     void commonUpdate();
-    void draw();
+
+    virtual inline void update(){};
+    virtual inline void draw(){};
+
     inline ofVec3f getLoc(){return loc;};
     inline void setLoc(ofVec3f l){loc = l;};
     inline ofColor getColor(){return color;};

@@ -18,11 +18,4 @@ void Particle::commonUpdate(){
     vel += acc;
     loc += vel;
     
-
-    
-}
-
-void Particle::draw(){
-
-    
 }
