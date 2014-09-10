@@ -16,7 +16,7 @@
 #define CAM_HEIGHT 720
 
 #define DEBUG true
-#define ON_DEVICE false
+#define ON_DEVICE true
 
 enum drawModes{
     BARS, PULSE, PANELS, CLOCK,
@@ -49,6 +49,7 @@ class ofApp : public ofxiOSApp{
         void drawBars();
         void drawPanels();
         ofColor primaryColor, secondaryColor, tertiaryColor, grabbingColor;
+        void updateColors();
     
         
         vector<Particle*> particles;

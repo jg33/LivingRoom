@@ -34,6 +34,8 @@ protected:
     ofColor color;
     float size;
     
+    void keepOnScreen();
+    
 };
 
 #endif /* defined(__LivingRoom__Particle__) */

@@ -15,10 +15,11 @@ void ofApp::setup(){
     tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
 
     #if ON_DEVICE
-        cam.initGrabber(CAM_WIDTH, CAM_HEIGHT);
+        cam.initGrabber(CAM_WIDTH, CAM_HEIGHT, OF_PIXELS_BGRA);
     #endif
-    camPix.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGB);
-    camTex.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGB);
+    camPix.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGBA);
+    camTex.allocate(CAM_WIDTH , CAM_HEIGHT, GL_RGB);
+    camTex.clear();
     //canvasFbo.allocate(ofGetWidth(), ofGetHeight());
     
     
@@ -32,8 +33,14 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     #if ON_DEVICE
-        if(cam.isFrameNew()){
-            cam.update();
+        cam.update();
+
+        if(cam.isFrameNew()&&bIsGrabbing){
+            camPix.set( *cam.getPixels());
+            camTex = cam.getTextureReference();
+            grabColor();
+
+            
         }
     #endif
     
@@ -57,9 +64,6 @@ void ofApp::update(){
         
     }
     
-    if(bIsGrabbing){
-        grabColor();
-    }
     
     beat.update(ofGetElapsedTimeMillis());
 
@@ -87,6 +91,8 @@ void ofApp::draw(){
     
     if (bIsGrabbing){ //display Camera
         ofSetRectMode(OF_RECTMODE_CORNER);
+        ofFill();
+        ofSetColor(255,150);
         camTex.draw(0,0,ofGetWidth(),ofGetHeight());
         ofNoFill();
         ofSetColor(grabbingColor);
@@ -151,22 +157,27 @@ void ofApp::drawPanels(){
 
 void ofApp::grabColor(){
     int numPix = camPix.getHeight()*camPix.getWidth();
-    int step =10;
-    int totalR,totalG, totalB;
-    for (int i =0; i< numPix ; i+=step){ //get avg color
-        int x = i%camPix.getWidth();
-        int y = floor(i/camPix.getWidth());
-        ofColor pixelColor = camPix.getColor(x, y);
-        totalR+= pixelColor.r;
-        totalG+= pixelColor.g;
-        totalB+= pixelColor.b;
+    int step = 5;
+    int counter =0;
+    float totalR,totalG, totalB;
+    
+    for (int x =0; x< camPix.getWidth() ; x+=step){ //get avg color
+        for (int y=0; y<camPix.getHeight(); y+=step){
+            ofColor pixelColor = camPix.getColor(x, y);
+            totalR+= pixelColor.r;
+            totalG+= pixelColor.g;
+            totalB+= pixelColor.b;
+            counter++;
+        }
         
         
     }
-    totalR/= numPix/step;
-    totalG/= numPix/step;
-    totalB/= numPix/step;
     
+    totalR /= counter;
+    totalG /= counter;
+    totalB /= counter;
+    
+    cout<<totalR<<" "<<totalG<<" "<<totalB<<endl;
     grabbingColor = ofColor(totalR,totalG,totalB);
 
     
@@ -197,17 +208,14 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
     touchHoldCount = 0;
     
     if(bIsGrabbing){
-        if(DEBUG){
+        if(!ON_DEVICE){
             primaryColor = ofColor(ofRandom(255),ofRandom(255), ofRandom(255));
-            secondaryColor = primaryColor;
-            secondaryColor.setHueAngle(secondaryColor.getHueAngle()+120);
-            tertiaryColor = secondaryColor;
-            tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
-            
-            
+            updateColors();
+   
         } else{
             
             primaryColor = grabbingColor;
+            updateColors();
         }
         
         for( int i = 0 ; i<particles.size();i++){
@@ -229,6 +237,13 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
         
         
     }
+}
+
+void ofApp::updateColors(){
+    secondaryColor = primaryColor;
+    secondaryColor.setHueAngle(secondaryColor.getHueAngle()+120);
+    tertiaryColor = secondaryColor;
+    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
 }
 
 //--------------------------------------------------------------

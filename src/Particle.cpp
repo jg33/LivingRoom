@@ -19,3 +19,8 @@ void Particle::commonUpdate(){
     loc += vel;
     
 }
+
+void Particle::keepOnScreen(){
+    
+    
+}

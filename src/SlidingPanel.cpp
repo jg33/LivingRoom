@@ -9,7 +9,7 @@
 #include "SlidingPanel.h"
 
 SlidingPanel::SlidingPanel(){
-    size = ofRandom(10,300);
+    size = ofRandom(1,50);
 
 }
 
@@ -19,6 +19,8 @@ void SlidingPanel::update(){
 }
 
 void SlidingPanel::draw(){
+    ofSetRectMode(OF_RECTMODE_CENTER);
+
     ofSetColor(color);
     ofRect(loc.x, ofGetHeight()/2, size, ofGetHeight());
 }
