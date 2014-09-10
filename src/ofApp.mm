@@ -1,5 +1,9 @@
 #include "ofApp.h"
 
+bool deathTest(Particle* p){
+    return p->bReadyToDie;
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetOrientation(OF_ORIENTATION_90_LEFT);
@@ -9,15 +13,12 @@ void ofApp::setup(){
     
     
     primaryColor = primaryColor.royalBlue;
-    secondaryColor = primaryColor;
-    secondaryColor.setHueAngle(secondaryColor.getHueAngle()+120);
-    tertiaryColor = secondaryColor;
-    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
+    updateColors();
 
     #if ON_DEVICE
-        cam.initGrabber(CAM_WIDTH, CAM_HEIGHT, OF_PIXELS_BGRA);
+        cam.initGrabber(CAM_WIDTH, CAM_HEIGHT, OF_IMAGE_COLOR);
     #endif
-    camPix.allocate(CAM_WIDTH , CAM_HEIGHT, OF_PIXELS_RGBA);
+    camPix.allocate(CAM_WIDTH , CAM_HEIGHT, OF_IMAGE_COLOR);
     camTex.allocate(CAM_WIDTH , CAM_HEIGHT, GL_RGB);
     camTex.clear();
     //canvasFbo.allocate(ofGetWidth(), ofGetHeight());
@@ -25,7 +26,7 @@ void ofApp::setup(){
     
     ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
     
-    drawMode = PANELS;
+    drawMode = PULSE;
     setupMode(drawMode);
 
 }
@@ -36,7 +37,8 @@ void ofApp::update(){
         cam.update();
 
         if(cam.isFrameNew()&&bIsGrabbing){
-            camPix.set( *cam.getPixels());
+            //camPix.set( *cam.getPixels());
+            camPix.setFromPixels(cam.getPixelsRef());
             camTex = cam.getTextureReference();
             grabColor();
 
@@ -49,11 +51,17 @@ void ofApp::update(){
         prevMode = drawMode;
     }
     
+    if (drawMode == PULSE){
+        pulser.update();
+    }
     
     for( int i = 0 ; i<particles.size();i++){ //always update everything
         particles[i]->update();
         
     }
+    ofRemove(particles, deathTest);
+    
+    
     
     if(bTouchHeld){
         if(touchHoldCount>TOUCH_HOLD_TIME){
@@ -81,7 +89,13 @@ void ofApp::draw(){
         case PANELS:
             drawPanels();
             break;
-            
+        case PULSE:
+            ofBackground(0);
+            pulser.draw();
+            break;
+        case CLOCK:
+            ofBackground(255);
+            break;
             default:
             break;
             
@@ -123,10 +137,25 @@ void ofApp::setupMode(drawModes newMode){
             SlidingPanel * newPanel = new SlidingPanel();
             particles.push_back( newPanel );
             particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
-            particles[i]->setColor(primaryColor);
+            switch (i%2) {
+                case 0:
+                    particles[i]->setColor(primaryColor);
+                    break;
+                    
+                case 1:
+                    particles[i]->setColor(secondaryColor);
+                    break;
+                default:
+                    break;
+            }
+            
             
         }
         
+    } else if( newMode == PULSE){
+        pulser = BeatPulser();
+        pulser.init();
+        pulser.loc = ofVec3f(ofGetWidth()/2, ofGetHeight()/2);
     }
 }
 
@@ -156,7 +185,7 @@ void ofApp::drawPanels(){
 }
 
 void ofApp::grabColor(){
-    int numPix = camPix.getHeight()*camPix.getWidth();
+    //int numPix = camPix.getHeight()*camPix.getWidth();
     int step = 5;
     int counter =0;
     float totalR,totalG, totalB;
@@ -167,6 +196,9 @@ void ofApp::grabColor(){
             totalR+= pixelColor.r;
             totalG+= pixelColor.g;
             totalB+= pixelColor.b;
+            
+            
+
             counter++;
         }
         
@@ -176,8 +208,8 @@ void ofApp::grabColor(){
     totalR /= counter;
     totalG /= counter;
     totalB /= counter;
-    
     cout<<totalR<<" "<<totalG<<" "<<totalB<<endl;
+    
     grabbingColor = ofColor(totalR,totalG,totalB);
 
     
@@ -215,13 +247,36 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
         } else{
             
             primaryColor = grabbingColor;
+            primaryColor = ofColor(ofRandom(255),ofRandom(255), ofRandom(255));
+
             updateColors();
         }
         
-        for( int i = 0 ; i<particles.size();i++){
-            particles[i]->setColor(primaryColor);
-            
+        switch(drawMode){
+            case PANELS:
+                for(int i=0;i<particles.size();i++){
+                    switch (i%2) {
+                        case 0:
+                            particles[i]->setColor(primaryColor);
+                            break;
+                            
+                        case 1:
+                            particles[i]->setColor(secondaryColor);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            default:
+                for( int i = 0 ; i<particles.size();i++){
+                    particles[i]->setColor(primaryColor);
+                    
+                }
+                break;
         }
+        
+
         
         bIsGrabbing = false;
         
@@ -232,7 +287,6 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
             int i = (int) drawMode; //cycle through modes
             i++;
             drawMode = (drawModes) i;
-            cout<<drawMode<<endl;
         }
         
         
@@ -241,9 +295,9 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
 
 void ofApp::updateColors(){
     secondaryColor = primaryColor;
-    secondaryColor.setHueAngle(secondaryColor.getHueAngle()+120);
+    secondaryColor.setHueAngle(secondaryColor.getHueAngle()+150);
     tertiaryColor = secondaryColor;
-    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+120);
+    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+210);
 }
 
 //--------------------------------------------------------------

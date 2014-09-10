@@ -10,12 +10,14 @@
 
 SlidingPanel::SlidingPanel(){
     size = ofRandom(1,50);
-
+    bIsImmortal = true;
 }
 
 void SlidingPanel::update(){
     commonUpdate();
-    acc = ofVec3f(0.1*ofSignedNoise(randomSeed+(ofGetFrameNum()*0.01)),0,0) ;
+    wrapToScreen();
+    float speed = ofMap(size,1,50,0.1,0.01);
+    acc = ofVec3f(0.1*ofSignedNoise(randomSeed+(ofGetFrameNum()*speed)),0,0) ;
 }
 
 void SlidingPanel::draw(){

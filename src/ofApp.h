@@ -7,6 +7,7 @@
 #include "Particle.h"
 #include "VertBar.h"
 #include "SlidingPanel.h"
+#include "BeatPulser.h"
 
 
 #define DEFAULT_PARTICLES 100
@@ -16,7 +17,7 @@
 #define CAM_HEIGHT 720
 
 #define DEBUG true
-#define ON_DEVICE true
+#define ON_DEVICE false
 
 enum drawModes{
     BARS, PULSE, PANELS, CLOCK,
@@ -53,7 +54,9 @@ class ofApp : public ofxiOSApp{
     
         
         vector<Particle*> particles;
-        
+    
+        BeatPulser pulser;
+    
 
         bool bTouchHeld;
         bool bIsGrabbing;
@@ -64,7 +67,7 @@ class ofApp : public ofxiOSApp{
             ofVideoGrabber cam;
         #endif
         ofTexture camTex;
-        ofPixels camPix;
+        ofImage camPix;
         
         ofxBeat beat;
         

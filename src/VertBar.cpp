@@ -11,7 +11,7 @@
 
 VertBar::VertBar(){
     changeSpeed = ofRandom(0.00001,0.02);
-    cout<<"made vert"<<endl;
+    bIsImmortal = true;
 }
 
 void VertBar::update(){

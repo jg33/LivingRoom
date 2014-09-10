@@ -12,6 +12,8 @@
 #include <iostream>
 #include "ofMain.h"
 
+#define DEFAULT_MAX_LIFE 600
+
 class Particle{
     
 public:
@@ -26,15 +28,20 @@ public:
     inline void setLoc(ofVec3f l){loc = l;};
     inline ofColor getColor(){return color;};
     inline void setColor(ofColor c){color = c;};
+
+    bool bReadyToDie;
     
     
 protected:
     int randomSeed;
     ofVec3f loc,vel,acc;
     ofColor color;
-    float size;
+    float size, life, maxLife;
     
     void keepOnScreen();
+    void wrapToScreen();
+    
+    bool bIsImmortal;
     
 };
 
