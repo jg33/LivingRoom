@@ -12,6 +12,8 @@
 VertBar::VertBar(){
     changeSpeed = ofRandom(0.00001,0.015);
     bIsImmortal = true;
+    noiseAmtX =0;
+    noiseAmtY =0;
 }
 
 void VertBar::update(){

@@ -8,6 +8,10 @@
 
 #include "BeatPulser.h"
 
+bool deathTest(Particle p){
+    return p.bReadyToDie;
+}
+
 BeatPulser::BeatPulser(){
 }
 
@@ -23,6 +27,8 @@ void BeatPulser::update(){
         
     }
     
+    ofRemove(party, deathTest);
+    ofRemove(pulses, deathTest);
 
     for (int i=0;i<party.size();i++){
         party[i].update();

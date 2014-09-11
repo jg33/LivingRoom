@@ -123,21 +123,20 @@ void ofApp::draw(){
 }
 
 void ofApp::setupMode(drawModes newMode){
+    particles.clear();
     if(newMode==BARS){
-        particles.clear();
         for( int i = 0 ; i<DEFAULT_PARTICLES;i++){
             VertBar *newBar = new VertBar();
             particles.push_back( newBar );
-            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
-            particles[i]->setColor(primaryColor);
+            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),0,0));
+            particles[i]->setColor(secondaryColor);
             
         }
     } else if(newMode==PANELS){
-        particles.clear();
         for( int i = 0 ; i<DEFAULT_PARTICLES;i++){
             SlidingPanel * newPanel = new SlidingPanel();
             particles.push_back( newPanel );
-            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()),0));
+            particles[i]->setLoc(ofVec3f(ofRandom(ofGetWidth()),0,0));
             switch (i%2) {
                 case 0:
                     particles[i]->setColor(primaryColor);
@@ -164,7 +163,7 @@ void ofApp::setupMode(drawModes newMode){
 void ofApp::drawBars(){
     ofFill();
     ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(secondaryColor);
+    ofSetColor(primaryColor);
     ofRect(0,0,ofGetWidth(),ofGetHeight());
     
     for( int i = 0 ; i<particles.size();i++){
@@ -219,7 +218,33 @@ void ofApp::grabColor(){
 
 void ofApp::audioReceived(float * f, int buff  , int chan){
     
+    if(beat.kick()>0.5){
+        kickTimer = 0;
+    } else {
+        kickTimer++;
+    }
+    if (beat.snare() > 0.5){
+        snareTimer =0;
+    } else {
+        snareTimer++;
+    }
+    if (beat.hihat() > 0.5){
+        hatTimer = 0;
+    } else {
+        hatTimer++;
+    }
+    
+    int timerTotal = kickTimer+snareTimer+hatTimer;
+    tempo = BASE_TEMPO - timerTotal;
+    
+    
 }
+
+void ofApp::checkTempo(){
+    
+    
+}
+
 
 //--------------------------------------------------------------
 void ofApp::exit(){
@@ -274,7 +299,7 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
                 break;
             default:
                 for( int i = 0 ; i<particles.size();i++){
-                    particles[i]->setColor(primaryColor);
+                    particles[i]->setColor(secondaryColor);
                     
                 }
                 break;

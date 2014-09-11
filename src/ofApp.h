@@ -13,6 +13,8 @@
 #define DEFAULT_PARTICLES 100
 #define TOUCH_HOLD_TIME 60
 
+#define BASE_TEMPO 120
+
 #define CAM_WIDTH 1280
 #define CAM_HEIGHT 720
 
@@ -71,7 +73,10 @@ class ofApp : public ofxiOSApp{
         ofImage camPix;
         
         ofxBeat beat;
-        
+        float tempo;
+        int kickTimer, snareTimer, hatTimer;
+        void checkTempo();
+    
         ofFbo canvasFbo;
     
         drawModes drawMode, prevMode ;
