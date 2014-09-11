@@ -9,6 +9,8 @@
 #ifndef __LivingRoom__PartiCircle__
 #define __LivingRoom__PartiCircle__
 
+#define MAX_SIZE 20
+
 #include <iostream>
 #include "ofMain.h"
 #include "Particle.h"

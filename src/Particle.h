@@ -36,7 +36,7 @@ protected:
     int randomSeed;
     ofVec3f loc,vel,acc;
     ofColor color;
-    float size, life, maxLife;
+    float size, life, maxLife, drag;
     
     void keepOnScreen();
     void wrapToScreen();

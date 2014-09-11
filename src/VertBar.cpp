@@ -10,7 +10,7 @@
 #include "ofMain.h"
 
 VertBar::VertBar(){
-    changeSpeed = ofRandom(0.00001,0.02);
+    changeSpeed = ofRandom(0.00001,0.015);
     bIsImmortal = true;
 }
 

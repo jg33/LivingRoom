@@ -12,18 +12,24 @@ PartiCircle::PartiCircle(ofVec3f l, ofColor c){
     loc = l;
     color = c;
     
-    acc = ofVec3f(ofRandom(-2,2),ofRandom(-2,2),ofRandom(-0.5,-0.5));
-    initialSize = ofRandom(2,20);
+    acc = ofVec3f(ofRandom(-1,1),ofRandom(-1,1));
+    initialSize = ofRandom(2,MAX_SIZE);
+    
+    drag = 1 - (initialSize/MAX_SIZE);
+    
+    maxLife = 6000;
 }
 
 void PartiCircle::update(){
     commonUpdate();
     
-    size = ofMap(life,0,maxLife,0,initialSize);
+    //size = MAX_SIZE;
+    size = ofMap(life,0,maxLife,initialSize,0);
     
 }
 
 void PartiCircle::draw(){
+    ofSetCircleResolution(size*5);
     ofSetColor(color);
     ofCircle(loc, size);
     

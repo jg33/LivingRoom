@@ -9,16 +9,17 @@
 #include "Particle.h"
 
 
-
 Particle::Particle(){
     size = ofRandom(ofGetHeight()-20);
     randomSeed = ofRandom(66666);
     maxLife = DEFAULT_MAX_LIFE;
+    drag = 1;
 }
 
 
 void Particle::commonUpdate(){
     vel += acc;
+    vel *= drag;
     loc += vel;
     
     if(life>maxLife && !bIsImmortal){
@@ -50,3 +51,4 @@ void Particle::wrapToScreen(){
     }
     
 }
+

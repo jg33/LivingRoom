@@ -9,6 +9,8 @@
 #ifndef __LivingRoom__BeatPulser__
 #define __LivingRoom__BeatPulser__
 
+#define DEBUG true
+
 #include <iostream>
 #include "ofMain.h"
 #include "PartiCircle.h"

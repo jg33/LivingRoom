@@ -11,6 +11,7 @@
 SlidingPanel::SlidingPanel(){
     size = ofRandom(1,50);
     bIsImmortal = true;
+    drag = 1;
 }
 
 void SlidingPanel::update(){

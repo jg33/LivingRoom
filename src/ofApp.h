@@ -61,7 +61,8 @@ class ofApp : public ofxiOSApp{
         bool bTouchHeld;
         bool bIsGrabbing;
         int touchHoldCount;
-        
+        ofVec3f touchLoc;
+    
         void grabColor();
         #if ON_DEVICE
             ofVideoGrabber cam;

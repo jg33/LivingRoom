@@ -53,6 +53,7 @@ void ofApp::update(){
     
     if (drawMode == PULSE){
         pulser.update();
+        pulser.beat(beat.kick(),beat.snare(),beat.hihat());
     }
     
     for( int i = 0 ; i<particles.size();i++){ //always update everything
@@ -112,7 +113,7 @@ void ofApp::draw(){
         ofSetColor(grabbingColor);
         ofSetLineWidth(10);
         ofSetCircleResolution(500);
-        ofCircle(ofGetWidth()/2, ofGetHeight()/2, 50);
+        ofCircle(touchLoc, 50);
     }
     
     if(DEBUG){
@@ -156,6 +157,7 @@ void ofApp::setupMode(drawModes newMode){
         pulser = BeatPulser();
         pulser.init();
         pulser.loc = ofVec3f(ofGetWidth()/2, ofGetHeight()/2);
+        pulser.setColors(primaryColor, secondaryColor, tertiaryColor);
     }
 }
 
@@ -227,10 +229,16 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::touchDown(ofTouchEventArgs & touch){
     bTouchHeld = true;
+    touchLoc = touch;
+    
+    if (!ON_DEVICE){
+        grabbingColor = ofColor(ofRandom(255),ofRandom(255), ofRandom(255));
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::touchMoved(ofTouchEventArgs & touch){
+    touchLoc = touch;
 
 }
 
@@ -240,17 +248,9 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
     touchHoldCount = 0;
     
     if(bIsGrabbing){
-        if(!ON_DEVICE){
-            primaryColor = ofColor(ofRandom(255),ofRandom(255), ofRandom(255));
-            updateColors();
-   
-        } else{
-            
-            primaryColor = grabbingColor;
-            primaryColor = ofColor(ofRandom(255),ofRandom(255), ofRandom(255));
-
-            updateColors();
-        }
+        
+        primaryColor = grabbingColor;
+        updateColors();
         
         switch(drawMode){
             case PANELS:
@@ -267,6 +267,10 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
                             break;
                     }
                 }
+                break;
+                
+            case PULSE:
+                pulser.setColors(primaryColor, secondaryColor, tertiaryColor);
                 break;
             default:
                 for( int i = 0 ; i<particles.size();i++){
@@ -291,13 +295,15 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
         
         
     }
+    
+    
 }
 
 void ofApp::updateColors(){
     secondaryColor = primaryColor;
     secondaryColor.setHueAngle(secondaryColor.getHueAngle()+150);
     tertiaryColor = secondaryColor;
-    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+210);
+    tertiaryColor.setHueAngle(tertiaryColor.getHueAngle()+60);
 }
 
 //--------------------------------------------------------------
