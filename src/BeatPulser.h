@@ -9,7 +9,7 @@
 #ifndef __LivingRoom__BeatPulser__
 #define __LivingRoom__BeatPulser__
 
-#define DEBUG true
+#define DEBUG false
 
 #include <iostream>
 #include "ofMain.h"

@@ -25,6 +25,8 @@ void ofApp::setup(){
     
     
     ofSoundStreamSetup(0, 1, this, 44100, beat.getBufferSize(), 4);
+    beat.enableBeatDetect();
+
     
     drawMode = PULSE;
     setupMode(drawMode);
@@ -38,7 +40,7 @@ void ofApp::update(){
 
         if(cam.isFrameNew()&&bIsGrabbing){
             //camPix.set( *cam.getPixels());
-            camPix.setFromPixels(cam.getPixelsRef());
+            //camPix.setFromPixels(cam.getPixelsRef());
             camTex = cam.getTextureReference();
             grabColor();
 
@@ -187,10 +189,21 @@ void ofApp::drawPanels(){
 
 void ofApp::grabColor(){
     //int numPix = camPix.getHeight()*camPix.getWidth();
-    int step = 5;
+    //int step = 5;
     int counter =0;
     float totalR,totalG, totalB;
+    unsigned char * pixels = cam.getPixels();
     
+    for (int i=0; i< sizeof(pixels)/sizeof(pixels[0]) ;i+=3){
+        //unsigned char thisPixel = pixels[i];
+        
+        totalR += pixels[i];
+        totalG += pixels[i+1];
+        totalB += pixels[i+2];
+        counter++;
+    }
+    
+    /*
     for (int x =0; x< camPix.getWidth() ; x+=step){ //get avg color
         for (int y=0; y<camPix.getHeight(); y+=step){
             ofColor pixelColor = camPix.getColor(x, y);
@@ -204,7 +217,8 @@ void ofApp::grabColor(){
         }
         
         
-    }
+    }*/
+    
     
     totalR /= counter;
     totalG /= counter;
@@ -212,11 +226,11 @@ void ofApp::grabColor(){
     cout<<totalR<<" "<<totalG<<" "<<totalB<<endl;
     
     grabbingColor = ofColor(totalR,totalG,totalB);
-
     
 }
 
 void ofApp::audioReceived(float * f, int buff  , int chan){
+    beat.audioReceived(f   , buff, chan);
     
     if(beat.kick()>0.5){
         kickTimer = 0;

@@ -18,8 +18,8 @@
 #define CAM_WIDTH 1280
 #define CAM_HEIGHT 720
 
-#define DEBUG true
-#define ON_DEVICE false
+#define DEBUG false
+#define ON_DEVICE true
 
 enum drawModes{
     BARS, PULSE, PANELS, CLOCK,

@@ -77,7 +77,7 @@ void BeatPulser::beat(float k, float s, float h){
     partyBirthRate = ofMap(h, 0, 1, 0, 5);
     
     if (k >0){
-        pulses.push_back(PulseCircle(outerCircleSize, primaryColor));
+        //pulses.push_back(PulseCircle(outerCircleSize, primaryColor));
     }
     
     if (DEBUG){
