@@ -22,6 +22,15 @@ void Particle::commonUpdate(){
     vel *= drag;
     loc += vel;
     
+    if (abs(noiseAmtX+noiseAmtY) >0 && abs(noiseFreq)>0){
+        noiseVec = ofVec3f(
+            ofNoise(randomSeed+(ofGetFrameNum()*noiseFreq))     *noiseAmtX,
+            ofNoise(378+randomSeed+(ofGetFrameNum()*noiseFreq)) *noiseAmtY,
+            0
+        );
+        loc += noiseVec;
+    }
+    
     if(life>maxLife && !bIsImmortal){
         bReadyToDie = true;
     } else {

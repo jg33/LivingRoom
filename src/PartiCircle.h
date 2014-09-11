@@ -30,4 +30,18 @@ private:
     
 };
 
+
+class PulseCircle : public PartiCircle{
+public:
+    PulseCircle();
+    PulseCircle(float size, ofColor startColor);
+    
+    void update();
+    void draw();
+    
+private:
+    float growth;
+    float opac;
+    
+};
 #endif /* defined(__LivingRoom__PartiCircle__) */

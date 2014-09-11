@@ -36,6 +36,7 @@ private:
     float outerCircleSize, middleShapeSize, partyBirthRate;
     
     vector<PartiCircle> party;
+    vector<PulseCircle> pulses;
     
 };
 

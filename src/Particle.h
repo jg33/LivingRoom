@@ -34,12 +34,15 @@ public:
     
 protected:
     int randomSeed;
-    ofVec3f loc,vel,acc;
+    ofVec3f loc,vel,acc, noiseVec;
     ofColor color;
     float size, life, maxLife, drag;
+    float noiseAmtX, noiseAmtY, noiseFreq;
     
     void keepOnScreen();
     void wrapToScreen();
+    
+    
     
     bool bIsImmortal;
     
